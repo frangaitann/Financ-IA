@@ -22,7 +22,7 @@
 <div align="center">
   <h2>Disclaimer</h2>
   <br>
-  <p>ENG: I'm not responsable of the use that the user gives or what it achieves using this script/program , it's fully responsability of the user and/or the person that executes the script. This was made just for learning, teaching and business helping purposes.</p>
+  <p>I'm not responsable of the use that the user gives or what it achieves using this script/program , it's fully responsability of the user and/or the person that executes the script. This was made just for learning, teaching and business helping purposes.</p>
 </div>
 
 <div align="center">

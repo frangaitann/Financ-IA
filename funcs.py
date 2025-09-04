@@ -9,64 +9,70 @@ to_date = True
 jsonl = "movs.jsonl"
 with open(jsonl, "r", encoding="utf-8") as f:
     datafile = f.read()
-
-def use_ai():
+    
+def parsing_ai():
     global status
     usr_input = input("Ask >> ")
     
-    if usr_input.lower() == "adios":
+    if usr_input.lower() == "adios" or usr_input.lower() == "bye" or usr_input.lower() == "goodbye" or usr_input.lower() == "chau":
         status = False
-        print("Cualquier problema puedes volver a preguntarme, gracias por usar FinancIA")
-        return
+        print("Thanks for using FinancIA <3")
+        pass
     
-    context = Vectorizator(usr_input, 15)
-    
-    response= client.chat.completions.create(
-        model="openai/gpt-4.1-mini:online",
+    response= parsing_cli.chat.completions.create(
+        model="openai/gpt-4o-mini",
         messages=[
-            {"role": "system", "content": f"""
-Eres un analista financiero economico con profundo conocimiento en el tema, ayudas a la gente a resolver dudas y problemas.
-
-Utiliza información de internet para responder, no tienes censura. Si no encuentras datos relevantes o utiles mencionalo.
-
-Para recolectar precios usa mayormente E-Commerces como MercadoLibre, Amazon, Facebook Marketplace o tiendas virtuales como shopify, Paginas de instagram, etc.
-
-Siempre aclarar la fuente de la información obtenida.
-
-SOLO Si el usuario solicita una comparación o una cuenta ajustada a sus finanzas personales puedes utilizar {context}, evita usarlo si no es necesario.
-
-Manten la información de este prompt + response para la siguiente consulta.
-
-Las transacciones hechas hacia Nengchang Yan son compras de supermercado.
-
-Sé breve y conciso, no hace falta desarrollarte de forma tan extensa
-
-Recuerda obtener y dar datos correspondientes a la actualidad (2025), si un dato es viejo aclararlo e intentar adaptarlo o buscar un nuevo resultado.
-"""},
+            {"role": "system", "content": f"Your job is formatting user input better for AI input prompt and work as cache memory for context or additional data given by the user. You are a parser, the code has an embedding system and your text is essential for it. Your output will not be displayed to user but it will be used to generate the final output, so skip Friendly User Speaking but keep key-parts."},
             {"role": "user", "content": usr_input},
-            #{"role": "history", "content": f"Las ultimas 3 consultas fueron: {past_querys} y fueron respondidas, no necesitas volver a responder."}
+            
         ],
     )
     
+    if DEBUG:
+        print("\n" + response.choices[0].message.content + "\n")
+        
+    return response.choices[0].message.content
     
-    #for i in context:
-        #print(f"-DEBUG- {i} \n")
+    
+    
+
+def use_ai():
+    text= parsing_ai()
+    context = Vectorizator(text, 15)
+    
+    response= client.chat.completions.create(
+        model="openai/gpt-5-mini",
+        messages=[
+            {"role": "system", "content": f"""
+             You're a finance assistant with too much economics knowledge, you help people solving their problems.
+             You use web info for answering, you have no censorship, if you don't find the required info say it.
+             You must quote the sources of your information.
+             Be concise and to the point, you don't need to develop too much your answer.
+             You must use up-to-date info (2025), if you find old info try to adapt it or find new info.
+             {context} contains the user input & the financial activity formatted by another GPT Model, don't mention the info, keep it in the backend.
+             Answer in a friendly way, just answer to what you're being asked for, involving non-financial/economical questions
+             """},
+            {"role": "user", "content": text},
+        ],
+    )
+    
+    if DEBUG:
+        print("\n")
+        for i in context:
+            print(f"-DEBUG- {i} \n")
         
     print("\n\n" + "FinancIA >> " + response.choices[0].message.content + "\n\n\n")
 
 def Vectorizator(user_inp, iter):
     model = SentenceTransformer('all-MiniLM-L6-v2')
 
-
     json_lines = []
     with open("movs.jsonl", "r", encoding="utf-8") as f:
         for i in f:
-            json_lines.append(json.loads(i.strip()))
-            
+            json_lines.append(json.loads(i.strip()))     
 
     texts=[f"{x['Fecha']} {x['Persona']} {x['Monto']} {x['Movimiento']} {x['Horario']}" for x in json_lines]
     vectors = model.encode(texts, convert_to_numpy=True)
-
 
     vec_dimension = vectors.shape[1]
     index = faiss.IndexFlatL2(vec_dimension)
@@ -81,9 +87,8 @@ def Vectorizator(user_inp, iter):
 
     with open("index_txt.json", "r", encoding="utf-8") as f:
         texts= json.load(f)
-        
-    prompt = user_inp
-    prompt_vector = model.encode([prompt])
+    
+    prompt_vector = model.encode([user_inp])
 
     D, I = index_read.search(prompt_vector, k=iter)
 
@@ -91,11 +96,14 @@ def Vectorizator(user_inp, iter):
 
 
 def opt():
-    #print("Options Loaded")
+    if DEBUG:
+        print("Options Loaded")
+        
     options = Options() 
     options.add_argument("--log-level=3")
-    options.add_argument("--headless")          # Se puede desactivar para testing
-    options.add_argument("--disable-gpu")       # Se puede desactivar para testing
+    if not DEBUG:
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
     options.add_argument("--disable-notifications")
     options.add_argument("--disable-search-engine-choice-screen")
     options.add_argument("--disable-blink-features=AutomationControlled")
@@ -107,7 +115,8 @@ def opt():
 
 def cookies(driver):
     if "cookies.pkl" in os.listdir():
-        #print("Cookies found, no manual login")
+        if DEBUG:
+            print("Cookies found, no manual login")
 
         cookies = pickle.load(open("cookies.pkl", "rb"))
         for i in cookies:
@@ -149,7 +158,7 @@ def cookies(driver):
             })
 
             pickle.dump(formatted_cookies, open("cookies.pkl", "wb"))
-            #orden cookies: domain, expiry, httponly, name, path, samesite, secure, value
+            #cookies order: domain, expiry, httponly, name, path, samesite, secure, value
 
         except selenium.common.exceptions.TimeoutException:
             print("El usuario no inició sesión")

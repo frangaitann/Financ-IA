@@ -27,11 +27,11 @@ DEBUG = False
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key="KEY_HERE", # MUST USE YOUR OWN OPENROUTER KEY
 )
 
 parsing_cli = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    api_key="KEY_HERE", # MUST USE YOUR OWN OPENROUTER KEY
 )
 

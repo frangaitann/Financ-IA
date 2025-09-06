@@ -1,31 +1,15 @@
 from imports import *
 from funcs import *
 import funcs
-
-# EL HIJO DE MIL PUTAS DE LAUTY, SE DIO CUENTA QUE SI YO TENGO UN PRESTAMO O ALGO A PAGAR A UNA FECHA FUTURA DENTRO DEL MISMO MES EL BOT NO LA ANALIZARÁ YA QUE EL PAGO NO FUE HECHO: POR ESTO MISMO HAY QUE CATEGORIZAR LOS INGRESOS Y EGRESOS EN "COMPRAS" "SERVICIOS" "COBROS" "PRESTAMOS O CREDITOS" "TRANSFERENCIAS"
-
-# SUMA TOTAL DA ERROR, NO PONER APPEND.NEW_DATA PORQUE CONVIERTE DATA EN LISTA Y ARROJA ERROR
-
-# AGREGAR QUE PUEDA LEER EL CAPITAL QUE SE POSEÉ ACTUALMENTE
-
-# AGREGAR HISTORIAL A LA IA PARA RECORDAR CONTEXTO DE LA CHARLA
-
-# COMO GUARDAR CACHE DE LA CONVERSACIÓN SIN MALGASTAR TOKENS
-
-# HACER WEB SCRAPPING + EMBEDDING PARA CONSULTAR DATOS ONLINE, el :online NO FUNCIONA CORRECTAMENTE
-
-# En resumidas cuentas, el response debe separarse en EL coloquial (el que lee el usuario) y el de busqueda (el que busca con la API de duckduckgo) para responder al usuario y al mismo tiempo buscar la respuesta
-
-# Al tener una primer IA que formatea el texto, puedo darle instrucciones tipo "Si contiene un mes, no uses el embedding, usá filtros por mes con la data" de esta forma no estoy todo el tiempo necesitando el embedding, ahorrando tokens y cambiando dinamicamente los metodos de respuesta y resolución
+import imports
 
 def main():
+    global DEBUG
+    
     if os.name == "nt":
         os.system("cls")
     else:
         os.system("clear")
-        
-    if DEBUG:
-        print("Starting Browser")
 
     options = opt()
 
@@ -39,18 +23,18 @@ def main():
  | |__   _ _ __   __ _ _ __   ___  | |    /  \   
  |  __| | | '_ \ / _` | '_ \ / __| | |   / /\ \  
  | |    | | | | | (_| | | | | (__ _| |_ / ____ \ 
- |_|    |_|_| |_|\__,_|_| |_|\___|_____/_/    \_\ V 1.3.5                        
+ |_|    |_|_| |_|\__,_|_| |_|\___|_____/_/    \_\ V 1.4.0                        
  """)
     
     print("If it's the first time starting FinancIA it will last a little bit more to load...")
     
-    if input("\n\n Press Enter to continue...") == "DEB":
-        global DEBUG
+    if input("\n\n Press Enter to continue... ").lower() == "deb":
+        imports.DEBUG = True
         DEBUG = True
-        print("\n Debug Mode")
+        print("\n-DEBUG- DEBUG Mode")
     
     if DEBUG:
-        print("Starting MP")
+        print("-DEBUG- Starting MP")
 
     if "cookies.pkl" in os.listdir():
         driver.get('https://www.mercadopago.com.ar')
@@ -69,7 +53,7 @@ def main():
     
     max_page= 0
     if DEBUG:
-        print("Starting Data Extraction")
+        print("-DEBUG- Starting Data Extraction")
 
     for i in pages_btns:
         try:
@@ -100,7 +84,7 @@ def main():
 
     driver.close()
     if DEBUG:
-        print("Data obtained, cleaning Terminal...")
+        print("-DEBUG- Data obtained, cleaning Terminal...")
     time.sleep(10)
     
     os.system("cls")

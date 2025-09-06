@@ -1,7 +1,7 @@
 <div align="center">
   <h2>Explanation</h2>
   <br>
-  <p> CURRENT VERSION V1.3.5<br><br</p>
+  <p> CURRENT VERSION V1.4.0<br><br</p>
 </div>
 
 <div>

@@ -1,4 +1,5 @@
 from imports import *
+import imports
 
 data=[]
 new_data=[]
@@ -14,31 +15,41 @@ def parsing_ai():
     global status
     usr_input = input("Ask >> ")
     
-    if usr_input.lower() == "adios" or usr_input.lower() == "bye" or usr_input.lower() == "goodbye" or usr_input.lower() == "chau":
-        status = False
+    if usr_input.lower() == "bye":
         print("Thanks for using FinancIA <3")
         pass
     
     response= parsing_cli.chat.completions.create(
         model="openai/gpt-4o-mini",
         messages=[
-            {"role": "system", "content": f"Your job is formatting user input better for AI input prompt and work as cache memory for context or additional data given by the user. You are a parser, the code has an embedding system and your text is essential for it. Your output will not be displayed to user but it will be used to generate the final output, so skip Friendly User Speaking but keep key-parts."},
+            {"role": "system", "content": f"You must format the user input into the specified way for helping the different functions & other AI Models in the code. You must take the important additional data that user provides. Func Embed works using embeddings and it's better for vague querys or semantic understanding is needed, Func Filt works using filtering by specific keywords or values, Func None dont uses any of them and is useful for non-data required questions. Call the func that better fits with the query. Format: Raw User Input + additional data if provided + embed/filt/none. Example: Order transactions by amount, Martin Hin is my another account so avoid it, filt. Example: Last month supermarket transactions, Juan Perez is a supermarket too, embed. Example: Which day is today, none. Remember: NO Answering, just formatting using the User Input + additional data + func type. The field User Input is required and must be always present, the field func type is REQUIRED and must always be present. If no additional data is provided, skip it's field."},
             {"role": "user", "content": usr_input},
-            
         ],
     )
     
-    if DEBUG:
-        print("\n" + response.choices[0].message.content + "\n")
+    if imports.DEBUG:
+        print("\n" + "-DEBUG- " + response.choices[0].message.content + "\n")
         
     return response.choices[0].message.content
     
     
-    
+def embedding(text):
+    context = Vectorizator(text, 15)
+    return context
+
 
 def use_ai():
     text= parsing_ai()
-    context = Vectorizator(text, 15)
+    context = ["NO ADDITIONAL CONTEXT"]
+    
+    if "embed" in text.lower():
+        if imports.DEBUG:
+            print("-DEBUG- Using embedding func")
+        context = embedding(text)
+        
+    elif "filt" in text.lower():
+        if imports.DEBUG:
+            print("-DEBUG- Using filter func")
     
     response= client.chat.completions.create(
         model="openai/gpt-5-mini",
@@ -49,14 +60,16 @@ def use_ai():
              You must quote the sources of your information.
              Be concise and to the point, you don't need to develop too much your answer.
              You must use up-to-date info (2025), if you find old info try to adapt it or find new info.
-             {context} contains the user input & the financial activity formatted by another GPT Model, don't mention the info, keep it in the backend.
-             Answer in a friendly way, just answer to what you're being asked for, involving non-financial/economical questions
+             {context} might contain the user input & the financial activity formatted by another GPT Model, don't mention the info, keep it in the backend.
+             Answer in a friendly way, just answer to what you're being asked for, involving non-financial/economical questions.
+             If the user doesn't provide enough data, dont ask for more, just answer with what you have.
+             Ignore "none", "embed", "filt" or "func type", they're just coding instructions.
              """},
             {"role": "user", "content": text},
         ],
     )
     
-    if DEBUG:
+    if imports.DEBUG:
         print("\n")
         for i in context:
             print(f"-DEBUG- {i} \n")
@@ -96,12 +109,12 @@ def Vectorizator(user_inp, iter):
 
 
 def opt():
-    if DEBUG:
-        print("Options Loaded")
+    if imports.DEBUG:
+        print("-DEBUG- Options Loaded")
         
     options = Options() 
     options.add_argument("--log-level=3")
-    if not DEBUG:
+    if not imports.DEBUG:
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
     options.add_argument("--disable-notifications")
@@ -115,8 +128,8 @@ def opt():
 
 def cookies(driver):
     if "cookies.pkl" in os.listdir():
-        if DEBUG:
-            print("Cookies found, no manual login")
+        if imports.DEBUG:
+            print("-DEBUG- Cookies found, no manual login")
 
         cookies = pickle.load(open("cookies.pkl", "rb"))
         for i in cookies:

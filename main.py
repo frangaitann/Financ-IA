@@ -11,11 +11,6 @@ def main():
     else:
         os.system("clear")
 
-    options = opt()
-
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=options)
-
     
     print(r"""
   ______ _                        _____          
@@ -23,18 +18,22 @@ def main():
  | |__   _ _ __   __ _ _ __   ___  | |    /  \   
  |  __| | | '_ \ / _` | '_ \ / __| | |   / /\ \  
  | |    | | | | | (_| | | | | (__ _| |_ / ____ \ 
- |_|    |_|_| |_|\__,_|_| |_|\___|_____/_/    \_\ V 1.4.0                        
+ |_|    |_|_| |_|\__,_|_| |_|\___|_____/_/    \_\ V 1.5.1                        
  """)
     
     print("If it's the first time starting FinancIA it will last a little bit more to load...")
     
     if input("\n\n Press Enter to continue... ").lower() == "deb":
         imports.DEBUG = True
-        DEBUG = True
         print("\n-DEBUG- DEBUG Mode")
     
-    if DEBUG:
+    if imports.DEBUG:
         print("-DEBUG- Starting MP")
+        
+    options = opt()
+
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
 
     if "cookies.pkl" in os.listdir():
         driver.get('https://www.mercadopago.com.ar')
@@ -44,6 +43,23 @@ def main():
     cookies(driver)
 
     WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="drawer-trigger"]')))
+    
+    inter_caps_list = driver.find_elements(By.CSS_SELECTOR, "span.andes-money-amount__fraction")
+    cents_caps_list = driver.find_elements(By.CSS_SELECTOR, 'span[class*="andes-money-amount__cents--superscript-"]')
+    
+    imports.cap = float(inter_caps_list[0].text.replace(".","") + "." + cents_caps_list[0].text)
+    imports.saves = float(inter_caps_list[3].text.replace(".","") + "." + cents_caps_list[3].text)
+    if imports.DEBUG:
+        print("\n-DEBUG- INTER_CAP " + inter_caps_list[0].text)
+        print("-DEBUG- CENTS_CAP " + cents_caps_list[0].text)
+        print("-DEBUG- IMPORTS_CAP " + str(imports.cap))
+        print("-DEBUG- VAR TYPE " + str(type(imports.cap)))
+        
+        print("\n-DEBUG- CENTS_SAVE " + cents_caps_list[3].text)
+        print("-DEBUG- INTER_SAVE " + inter_caps_list[3].text.replace(".", ""))
+        print("-DEBUG- IMPORTS_SAVE " + str(imports.saves))
+        print("-DEBUG- VAR TYPE " + str(type(imports.saves)) + "\n")
+        
 
     driver.get("https://www.mercadopago.com.ar/activities#from-section=menu")
     
@@ -52,7 +68,7 @@ def main():
     pages_btns = driver.find_elements(By.CSS_SELECTOR, "li.andes-pagination__button")
     
     max_page= 0
-    if DEBUG:
+    if imports.DEBUG:
         print("-DEBUG- Starting Data Extraction")
 
     for i in pages_btns:
@@ -83,7 +99,7 @@ def main():
             print("All transactions received.")
 
     driver.close()
-    if DEBUG:
+    if imports.DEBUG:
         print("-DEBUG- Data obtained, cleaning Terminal...")
     time.sleep(10)
     

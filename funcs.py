@@ -64,6 +64,7 @@ def use_ai():
              Answer in a friendly way, just answer to what you're being asked for, involving non-financial/economical questions.
              If the user doesn't provide enough data, dont ask for more, just answer with what you have.
              Ignore "none", "embed", "filt" or "func type", they're just coding instructions.
+             {imports.cap} is the user's current account balance in AR$ and {imports.saves} are their savings balance in AR$.
              """},
             {"role": "user", "content": text},
         ],
@@ -121,6 +122,7 @@ def opt():
     options.add_argument("--disable-search-engine-choice-screen")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('excludeSwitches', ['enable-logging']) # Disables ChromeDriver logs
     options.add_experimental_option('useAutomationExtension', False)
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; Win11) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 OPR/119.0.0.0")
     return options

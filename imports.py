@@ -23,15 +23,18 @@ import numpy as np
 import pandas as pd
 from io import StringIO
 
+
+cap = 0
+saves = 0
 DEBUG = False
 
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="KEY_HERE", # MUST USE YOUR OWN OPENROUTER KEY
+    api_key="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",
 )
 
 parsing_cli = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key="KEY_HERE", # MUST USE YOUR OWN OPENROUTER KEY
+    api_key="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",
 )
 

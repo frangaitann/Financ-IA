@@ -10,17 +10,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 from pywinauto import Desktop
 from openai import OpenAI
 from sentence_transformers import SentenceTransformer
-import selenium.common.exceptions
-import selenium.webdriver
-import os
-import glob
-import time
-import pickle
-import json
-import faiss
-import requests
-import numpy as np
-import pandas as pd
+import selenium.common.exceptions, datetime, selenium.webdriver, os, glob, time, pickle, json, faiss, requests, numpy as np, pandas as pd, zoneinfo
 from io import StringIO
 
 cap = None

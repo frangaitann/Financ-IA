@@ -1,3 +1,4 @@
+from sympy import true
 from imports import *
 import imports
 
@@ -7,6 +8,7 @@ status = True
 to_date = True
 gpt_token = None
 deep_token = None
+tz = zoneinfo.ZoneInfo("America/Buenos_Aires")
 
 #Files Folder
 jsonl = "movs.jsonl"
@@ -50,6 +52,9 @@ def parsing_ai(GPT):
     if imports.DEBUG:
         print("\n" + "-DEBUG- " + response.choices[0].message.content + "\n")
         
+    with open("history.txt", "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S')}] User Input: {usr_input}\n")
+            
     return response.choices[0].message.content
     
     
@@ -71,6 +76,9 @@ def use_ai(GPT, DEEP):
         if imports.DEBUG:
             print("-DEBUG- Using filter func")
     
+    history = Vectorizator2(text, 5)
+    #print(history)
+    
     response= DEEP.chat.completions.create(
         model="deepseek/deepseek-chat-v3-0324",
         messages=[
@@ -85,6 +93,7 @@ def use_ai(GPT, DEEP):
              If the user doesn't provide enough data, dont ask for more, just answer with what you have.
              Ignore "none", "embed", "filt" or "func type", they're just coding instructions.
              {imports.cap} is the user's current account balance in AR$ and {imports.saves} are their savings balance in AR$.
+             {history} is the previous user inputs & AI answers, use it as context for understanding the user better.
              """},
             {"role": "user", "content": text},
         ],
@@ -94,8 +103,69 @@ def use_ai(GPT, DEEP):
         print("\n")
         for i in context:
             print(f"-DEBUG- {i} \n")
+    
+    with open("history.txt", "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S')}] Financ-IA: {response.choices[0].message.content}\n")
         
     print("\n\n" + "FinancIA >> " + response.choices[0].message.content + "\n\n\n")
+
+def Vectorizator2(user_inp, k=10):
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+
+    try:
+        with open("history.txt", "r", encoding="utf-8") as f:
+            data = f.read().splitlines()
+    except FileNotFoundError:
+        data = []
+
+    if not data:
+        return 
+
+    vectors = model.encode(data, convert_to_numpy=True)
+
+    if vectors.ndim == 1:
+        vectors = vectors.reshape(1, -1)
+
+    vec_dimension = vectors.shape[1]
+
+    index = faiss.IndexFlatL2(vec_dimension)
+    index.add(vectors.astype('float32'))
+
+    prompt_vector = model.encode([user_inp]).astype('float32')
+    D, I = index.search(prompt_vector, k=min(k, len(data)))
+
+    return [data[idx] for idx in I[0]]
+
+def Vectorizator3():
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    
+    relevancy = ["Nombre, Edad , Apellido, Transacción, Ahorro, Años, Recuerda, Recuerda esto"]
+
+    try:
+        with open("history.txt", "r", encoding="utf-8") as f:
+            data = f.read().splitlines()
+    except FileNotFoundError:
+        data = []
+
+    if not data:
+        return 
+
+    vectors = model.encode(data, convert_to_numpy=True)
+
+    if vectors.ndim == 1:
+        vectors = vectors.reshape(1, -1)
+
+    vec_dimension = vectors.shape[1]
+
+    index = faiss.IndexFlatL2(vec_dimension)
+    index.add(vectors.astype('float32'))
+
+    prompt_vector = model.encode([relevancy]).astype('float32')
+    D, I = index.search(prompt_vector, 10)
+
+    return [data[idx] for idx in I[0]]
+    
+    
 
 def Vectorizator(user_inp, iter):
     model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -275,4 +345,17 @@ def parser(driver):
                         f.write("\n")
                     data.append(data_cache)
                     new_data.append(data_cache)
-        
+    
+if __name__ == "__main__":
+    token_loader()
+    print("funcspy\n")
+    parsing_cli = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=gpt_token,
+)
+    client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=deep_token,
+)
+    while True:
+        use_ai(parsing_cli, client)

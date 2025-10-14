@@ -1,7 +1,7 @@
 <div align="center">
   <h2>Explanation</h2>
   <br>
-  <p> CURRENT VERSION V1.4.4<br><br> Currently working with MercadoPago e-bank but adaptable to anyone</p>
+  <p> CURRENT VERSION V1.5.2<br><br> Currently working with MercadoPago e-bank but adaptable to anyone</p>
 </div>
 
 <div>

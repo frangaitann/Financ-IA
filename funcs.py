@@ -5,13 +5,33 @@ data=[]
 new_data=[]
 status = True
 to_date = True
+gpt_token = None
+deep_token = None
 
 #Files Folder
 jsonl = "movs.jsonl"
 with open(jsonl, "r", encoding="utf-8") as f:
     datafile = f.read()
     
-def parsing_ai():
+
+def token_loader():
+    global gpt_token, deep_token
+    with open("tokens.jsonl", "r", encoding="utf-8") as f:
+        for line in f:
+            try:
+                data = json.loads(line.strip())
+                if data.get("model") == "GPT":
+                    gpt_token = data.get("token")
+                elif data.get("model") == "DEEP":
+                    deep_token = data.get("token")
+            except json.JSONDecodeError:
+                continue
+    
+    
+def searching(query):
+    print("¡¡Execute Order 66!!") #use duckduckgo lib for web scrapping
+    
+def parsing_ai(GPT):
     global status
     usr_input = input("Ask >> ")
     
@@ -19,7 +39,7 @@ def parsing_ai():
         print("Thanks for using FinancIA <3")
         pass
     
-    response= parsing_cli.chat.completions.create(
+    response= GPT.chat.completions.create(
         model="openai/gpt-4o-mini",
         messages=[
             {"role": "system", "content": f"You must format the user input into the specified way for helping the different functions & other AI Models in the code. You must take the important additional data that user provides. Func Embed works using embeddings and it's better for vague querys or semantic understanding is needed, Func Filt works using filtering by specific keywords or values, Func None dont uses any of them and is useful for non-data required questions. Call the func that better fits with the query. Format: Raw User Input + additional data if provided + embed/filt/none. Example: Order transactions by amount, Martin Hin is my another account so avoid it, filt. Example: Last month supermarket transactions, Juan Perez is a supermarket too, embed. Example: Which day is today, none. Remember: NO Answering, just formatting using the User Input + additional data + func type. The field User Input is required and must be always present, the field func type is REQUIRED and must always be present. If no additional data is provided, skip it's field."},
@@ -38,8 +58,8 @@ def embedding(text):
     return context
 
 
-def use_ai():
-    text= parsing_ai()
+def use_ai(GPT, DEEP):
+    text= parsing_ai(GPT)
     context = ["NO ADDITIONAL CONTEXT"]
     
     if "embed" in text.lower():
@@ -51,8 +71,8 @@ def use_ai():
         if imports.DEBUG:
             print("-DEBUG- Using filter func")
     
-    response= client.chat.completions.create(
-        model="openai/gpt-5-mini",
+    response= DEEP.chat.completions.create(
+        model="deepseek/deepseek-chat-v3-0324",
         messages=[
             {"role": "system", "content": f"""
              You're a finance assistant with too much economics knowledge, you help people solving their problems.

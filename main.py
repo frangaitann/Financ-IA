@@ -3,8 +3,35 @@ from funcs import *
 import funcs
 import imports
 
+# EL HIJO DE MIL PUTAS DE LAUTY, SE DIO CUENTA QUE SI YO TENGO UN PRESTAMO O ALGO A PAGAR A UNA FECHA FUTURA DENTRO DEL MISMO MES EL BOT NO LA ANALIZARÁ YA QUE EL PAGO NO FUE HECHO: POR ESTO MISMO HAY QUE CATEGORIZAR LOS INGRESOS Y EGRESOS EN "COMPRAS" "SERVICIOS" "COBROS" "PRESTAMOS O CREDITOS" "TRANSFERENCIAS"
+
+# SUMA TOTAL DA ERROR, NO PONER APPEND.NEW_DATA PORQUE CONVIERTE DATA EN LISTA Y ARROJA ERROR
+
+# AGREGAR HISTORIAL A LA IA PARA RECORDAR CONTEXTO DE LA CHARLA
+
+# COMO GUARDAR CACHE DE LA CONVERSACIÓN SIN MALGASTAR TOKENS
+
+# HACER WEB SCRAPPING + EMBEDDING PARA CONSULTAR DATOS ONLINE, el :online NO FUNCIONA CORRECTAMENTE
+
+# En resumidas cuentas, el response debe separarse en EL coloquial (el que lee el usuario) y el de busqueda (el que busca con la API de duckduckgo) para responder al usuario y al mismo tiempo buscar la respuesta
+
+# Al tener una primer IA que formatea el texto, puedo darle instrucciones tipo "Si contiene un mes, no uses el embedding, usá filtros por mes con la data" de esta forma no estoy todo el tiempo necesitando el embedding, ahorrando tokens y cambiando dinamicamente los metodos de respuesta y resolución
+
+# Hacer que el 1er modelo tagee la conversación con un topic, de esta forma se pueden guardar x cantidad de mensajes por topic y enviarselo nuevamente al siguiente mensaje para mantener coherencia en la conversación
+
 def main():
     global DEBUG
+    token_loader()
+    
+    parsing_cli = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=funcs.gpt_token,
+)
+    
+    client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=funcs.deep_token,
+)
     
     if os.name == "nt":
         os.system("cls")
@@ -63,7 +90,8 @@ def main():
 
     driver.get("https://www.mercadopago.com.ar/activities#from-section=menu")
     
-    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="appDesktop"]')))
+    
+    WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="activities-controls"]')))
     
     pages_btns = driver.find_elements(By.CSS_SELECTOR, "li.andes-pagination__button")
     
@@ -101,11 +129,13 @@ def main():
     driver.close()
     if imports.DEBUG:
         print("-DEBUG- Data obtained, cleaning Terminal...")
+        print("-DEBUG- Importing Tokens...")
+        token_loader()
     time.sleep(10)
     
     os.system("cls")
     while funcs.status:
-        use_ai()
+        use_ai(parsing_cli, client)
         
     time.sleep(15)
     

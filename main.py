@@ -11,6 +11,7 @@ import imports
 
 # EL HIJO DE MIL PUTAS DE LAUTY, SE DIO CUENTA QUE SI YO TENGO UN PRESTAMO O ALGO A PAGAR A UNA FECHA FUTURA DENTRO DEL MISMO MES EL BOT NO LA ANALIZARÁ YA QUE EL PAGO NO FUE HECHO: POR ESTO MISMO HAY QUE CATEGORIZAR LOS INGRESOS Y EGRESOS EN "COMPRAS" "SERVICIOS" "COBROS" "PRESTAMOS O CREDITOS" "TRANSFERENCIAS"
 
+
 # HACER WEB SCRAPPING + EMBEDDING PARA CONSULTAR DATOS ONLINE, el :online NO FUNCIONA CORRECTAMENTE
 
 # En resumidas cuentas, el response debe separarse en EL coloquial (el que lee el usuario) y el de busqueda (el que busca con la API de duckduckgo) para responder al usuario y al mismo tiempo buscar la respuesta

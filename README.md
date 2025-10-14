@@ -1,7 +1,7 @@
 <div align="center">
   <h2>Explanation</h2>
   <br>
-  <p> CURRENT VERSION V1.4.0<br><br</p>
+  <p> CURRENT VERSION V1.4.4<br><br> Currently working with MercadoPago e-bank but adaptable to anyone</p>
 </div>
 
 <div>
@@ -12,9 +12,8 @@
     <li>Dynamic Filter system, for avoiding waste of tokens</li>
     <li>GUI for Friendly Use</li>
     <li>Full linux support</li>
-    <li>Internet browsing</li>
+    <li>Web Scrapping</li>
     <li>Chat CACHE</li>
-    <li>Reading current balance capability</li>
     <li>Reading debts capability</li>
   </ul>
 </div>

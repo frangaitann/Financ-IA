@@ -1,20 +1,17 @@
 <div align="center">
   <h2>Explanation</h2>
   <br>
-  <p> CURRENT VERSION V1.5.2<br><br> Currently working with MercadoPago e-bank but adaptable to anyone</p>
+  <p> CURRENT VERSION V1.5.2<br><br> Currently working with MercadoPago e-bank but adaptable to anyone <br> If you need to adapt it and doesn't know how to, just text me, i'll be pleasured to help</p>
 </div>
 
 <div>
   <h2 align="center">Future Ideas</h2>
   <br>
   <ul>
-    <li>More optimization</li>
     <li>Dynamic Filter system, for avoiding waste of tokens</li>
     <li>GUI for Friendly Use</li>
     <li>Full linux support</li>
     <li>Web Scrapping</li>
-    <li>Chat CACHE</li>
-    <li>Reading debts capability</li>
   </ul>
 </div>
 

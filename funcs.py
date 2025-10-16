@@ -44,9 +44,22 @@ def parsing_ai(GPT):
     response= GPT.chat.completions.create(
         model="openai/gpt-4o-mini",
         messages=[
-            {"role": "system", "content": f"You must format the user input into the specified way for helping the different functions & other AI Models in the code. You must take the important additional data that user provides. Func Embed works using embeddings and it's better for vague querys or semantic understanding is needed, Func Filt works using filtering by specific keywords or values, Func None dont uses any of them and is useful for non-data required questions. Call the func that better fits with the query. Format: Raw User Input + additional data if provided + embed/filt/none. Example: Order transactions by amount, Martin Hin is my another account so avoid it, filt. Example: Last month supermarket transactions, Juan Perez is a supermarket too, embed. Example: Which day is today, none. Remember: NO Answering, just formatting using the User Input + additional data + func type. The field User Input is required and must be always present, the field func type is REQUIRED and must always be present. If no additional data is provided, skip it's field."},
+            {"role": "system", "content": f"You must format the user input into the specified way for helping the different functions & other AI Models in the code. You must take the important additional data that user provides. Func Embed works using embeddings and it's better for vague querys or semantic understanding is needed, Func Filt works using filtering by specific keywords or values, Func None dont uses any of them and is useful for non-data required questions. Call the func that better fits with the query. Format: Raw User Input + additional data if provided + embed/filt/none. Example: Order transactions by amount, Martin Hin is my another account so avoid it, filt. Example: Last month supermarket transactions, Juan Perez is a supermarket too, embed. Example: Which day is today, none. Remember: NO Answering, just formatting using the User Input + additional data + func type. The field User Input is required and must be always present, the field func type is REQUIRED and must always be present. If no additional data is provided, skip it's field."}, # IN THE FUTURE DELETE embed/filt/none AND JUST USE FUNC TOOLS OPENAI SYSTEM
             {"role": "user", "content": usr_input},
         ],
+        tools= [
+            {"type": "function",
+             "function": {
+                 "name": "FUNCTION NAME",
+                 "description": "FUNCTION DESCRIPTION",
+                 "parameters": {
+                     "type": "object",
+                     "properties": {
+                     } # COMPLETAR TOOLS TRAS HACER LA FUNCION DE BUSQUEDA AUTONOMA
+                 }
+             }}
+        ],
+        tool_choice="none"
     )
     
     if imports.DEBUG:
@@ -97,6 +110,7 @@ def use_ai(GPT, DEEP):
              """},
             {"role": "user", "content": text},
         ],
+        temperature= 0.143,
     )
     
     if imports.DEBUG:
